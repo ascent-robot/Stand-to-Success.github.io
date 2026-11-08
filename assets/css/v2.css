@@ -129,3 +129,28 @@ footer { padding: 36px 0 48px; text-align: center; color: var(--muted); font-siz
   .abstract { text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .clip video, .verdict { transition: none; } }
+
+/* v4: captions, phase tags, results summary */
+.caption { max-width: 760px; margin: 18px auto 0; text-align: center; font-size: 16px; color: var(--ink2); text-wrap: pretty; }
+.step h3 .ph { margin-left: auto; padding: 3px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-style: normal;
+               font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.step h3 .ph.dep { background: #e6f4f1; color: var(--ours); }
+.summary { display: grid; grid-template-columns: 1.35fr 1fr; gap: 16px; align-items: stretch; }
+.avg-card { border: 1px solid var(--line); border-radius: var(--radius); background: #fff; padding: 18px 22px 12px; }
+.card-t { margin: 0 0 10px; font-size: 15px; font-weight: 700; color: var(--ink); }
+#avg svg { width: 100%; height: auto; display: block; overflow: visible; }
+#avg .ax { font: 500 11.5px var(--sans); fill: var(--muted); }
+#avg .xl { font: 600 13px var(--sans); fill: var(--ink2); }
+#avg .val { font: 800 15px var(--sans); fill: var(--ink); }
+#avg .bar { cursor: default; }
+.kpis { display: grid; grid-template-rows: repeat(3, 1fr); gap: 10px; }
+.kpi { display: flex; align-items: center; gap: 14px; padding: 12px 18px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.kpi b { flex: none; min-width: 84px; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; color: var(--ours); font-variant-numeric: tabular-nums; }
+.kpi span { font-size: 15px; color: var(--ink2); line-height: 1.35; }
+@media (max-width: 760px) {
+  .summary { grid-template-columns: 1fr; }
+  .step h3 .ph { display: none; }
+}
+.charts svg.go { cursor: pointer; border-radius: 10px; transition: background .15s; }
+.charts svg.go:hover, .charts svg.go:focus-visible { background: #f8fafc; outline: none; }
+@media (min-width: 761px) { .step p { min-height: 4.65em; } }
