@@ -36,7 +36,7 @@
 <section class="section" id="overview" style="padding-top:12px">
   <div class="wrap">
     <div class="frame teaser">
-      <video src="assets/v2/overview.mp4" poster="assets/v2/overview.jpg" autoplay muted loop playsinline preload="auto"></video>
+      <video src="assets/v2/overview.mp4?v=1108c" poster="assets/v2/overview.jpg?v=1108c" autoplay muted loop playsinline preload="auto"></video>
     </div>
     <div class="stats">
       <div class="stat"><b>8</b><span>articulated-object tasks</span></div>
@@ -64,13 +64,13 @@
     <p class="lede">The frozen policy itself tells the robot where to stand. We read its action-expert features at candidate stances, score them with a probe fitted to sparse outcomes, and teach a student to predict them from wherever the robot is now.</p>
     <div class="block steps">
       <div class="step"><h3><i>1</i>Rollout &amp; Distillation<em class="ph">Training</em></h3><p>The frozen policy runs from candidate stances <i>b</i><sub>1</sub>&hellip;<i>b</i><sub>6</sub>; its action expert exposes a feature <i>h</i> at each one.</p>
-        <div class="frame"><video src="assets/v2/method_rollout.mp4" poster="assets/v2/method_rollout.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
+        <div class="frame"><video src="assets/v2/method_rollout.mp4?v=1108c" poster="assets/v2/method_rollout.jpg?v=1108c" autoplay muted loop playsinline preload="auto"></video></div></div>
       <div class="step"><h3><i>2</i>Score Match<em class="ph">Training</em></h3><p>A probe fitted to the sparse outcomes turns each feature <i>h</i> into a success score: the higher the score, the better the place to stand.</p>
-        <div class="frame"><video src="assets/v2/method_match.mp4" poster="assets/v2/method_match.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
+        <div class="frame"><video src="assets/v2/method_match.mp4?v=1108c" poster="assets/v2/method_match.jpg?v=1108c" autoplay muted loop playsinline preload="auto"></video></div></div>
       <div class="step"><h3><i>3</i>Score Predict<em class="ph">Training</em></h3><p>From the robot&rsquo;s current view at <i>a</i>, a pose-conditioned student predicts <i>z</i>&nbsp;&asymp;&nbsp;<i>h</i> for every candidate stance, so stances it has not visited can be scored.</p>
-        <div class="frame"><video src="assets/v2/method_predict.mp4" poster="assets/v2/method_predict.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
+        <div class="frame"><video src="assets/v2/method_predict.mp4?v=1108c" poster="assets/v2/method_predict.jpg?v=1108c" autoplay muted loop playsinline preload="auto"></video></div></div>
       <div class="step"><h3><i>4</i>Deploy<em class="ph dep">Deployment</em></h3><p>In a held-out kitchen, the predicted success field guides the robot to a good stance before it hands off.</p>
-        <div class="frame"><video src="assets/v2/method_deploy.mp4" poster="assets/v2/method_deploy.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
+        <div class="frame"><video src="assets/v2/method_deploy.mp4?v=1108c" poster="assets/v2/method_deploy.jpg?v=1108c" autoplay muted loop playsinline preload="auto"></video></div></div>
     </div>
   </div>
 </section>
@@ -230,7 +230,7 @@
     Array.prototype.forEach.call(tabs.children, function (b, j) { b.setAttribute('aria-selected', j === i ? 'true' : 'false'); b.tabIndex = j === i ? 0 : -1; });
     clips.forEach(function (c, k) {
       var v = vids[k]; c.classList.remove('ended'); v.pause();
-      v.poster = 'assets/v2/tasks/' + key + '/' + c.dataset.k + '.jpg'; v.src = 'assets/v2/tasks/' + key + '/' + c.dataset.k + '.mp4';
+      v.poster = 'assets/v2/tasks/' + key + '/' + c.dataset.k + '.jpg?v=1108c'; v.src = 'assets/v2/tasks/' + key + '/' + c.dataset.k + '.mp4?v=1108c';
       v.addEventListener('loadeddata', function () { if (--pending === 0 && my === token) start(); }, { once: true }); v.load();
     });
   }
