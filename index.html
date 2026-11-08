@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ASCENT</title>
-<meta name="description" content="Learning where to stand so a frozen manipulation policy can succeed.">
+<title>Stand to Succeed</title>
+<meta name="description" content="A policy-aware stance predictor that reuses a frozen vision-language-action policy.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -12,10 +12,16 @@
 </head>
 <body>
 
-<header class="hero">
+<div class="topbar" id="topbar"><div class="wrap">
+  <a class="brand" href="#top">Stand to Succeed</a>
+  <nav aria-label="Sections"><a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#results">Results</a><a href="#tasks">Examples</a></nav>
+</div></div>
+
+<header class="hero" id="top">
   <div class="wrap">
     <p class="venue">Preprint</p>
-    <h1>ASCENT</h1>
+    <h1>Stand to Succeed</h1>
+    <p class="tagline">Policy-aware stance prediction that reuses a frozen vision&ndash;language&ndash;action policy.</p>
     <p class="authors">Anonymous Authors</p>
     <nav class="links" aria-label="Links">
       <span class="btn is-off" aria-disabled="true">Paper</span>
@@ -26,77 +32,166 @@
   </div>
 </header>
 
-<!-- 1  obstacle episode: input -> goal -> top-down -->
-<section class="section" id="overview" style="padding-top:20px">
+<!-- overview: obstacle episode -->
+<section class="section" id="overview" style="padding-top:12px">
   <div class="wrap">
     <div class="frame teaser">
       <video src="assets/v2/overview.mp4" poster="assets/v2/overview.jpg" autoplay muted loop playsinline preload="auto"></video>
     </div>
-  </div>
-</section>
-
-<!-- 2  generalization -->
-<section class="section alt" id="generalization">
-  <div class="wrap">
-    <p class="eyebrow">Generalization</p>
-    <h2>Trained in one kitchen, deployed in unseen ones</h2>
-    <div class="block pair">
-      <div class="frame"><video src="assets/v2/gen_train.mp4" poster="assets/v2/gen_train.jpg" autoplay muted loop playsinline preload="auto"></video><span class="tag top-right">Training scene</span></div>
-      <div class="frame"><video src="assets/v2/gen_heldout.mp4" poster="assets/v2/gen_heldout.jpg" autoplay muted loop playsinline preload="auto"></video><span class="tag top-right">Held-out scene</span></div>
+    <div class="stats">
+      <div class="stat"><b>8</b><span>articulated-object tasks</span></div>
+      <div class="stat"><b class="g">48.6%</b><span>average success in held-out kitchens, vs. 26.5% for N2M</span></div>
+      <div class="stat"><b>0</b><span>manipulation weights changed</span></div>
     </div>
   </div>
 </section>
 
-<!-- 3  how it is trained -->
+<!-- abstract -->
+<section class="section alt" id="abstract">
+  <div class="wrap narrow">
+    <p class="eyebrow">Abstract</p>
+    <h2>Reach is not enough</h2>
+    <p class="abstract">A mobile robot can reach a task object yet remain poorly positioned for its manipulation policy. Choosing a useful base stance requires understanding the policy&rsquo;s visual and action preferences, beyond geometric reachability alone. We introduce <strong>Stand to Succeed</strong>, a policy-aware stance predictor that reuses a pretrained vision&ndash;language&ndash;action model without adapting its manipulation weights. During training, the policy&rsquo;s action expert exposes representations at candidate stances. A probe fitted to sparse manipulation outcomes links these representations to success, and a pose-conditioned student predicts them from the robot&rsquo;s current stereo observation. Feature matching and score preservation transfer candidate-view knowledge to unexecuted stance queries, while a supervised readout complements the fixed probe. At deployment, the predicted success field guides geodesic repositioning through traversable space, and a compact monotone gate decides when to hand off. Experiments on eight articulated-object tasks in held-out kitchens show improved task completion, with representation comparisons and budget studies explaining the contribution of policy-derived supervision.</p>
+  </div>
+</section>
+
+<!-- method -->
 <section class="section" id="method">
   <div class="wrap">
     <p class="eyebrow">Method</p>
     <h2>How it is trained</h2>
     <div class="block steps">
-      <div class="step"><h3><i>1</i>Rollout &amp; Distillation</h3><div class="frame"><video src="assets/v2/method_rollout.mp4" poster="assets/v2/method_rollout.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
-      <div class="step"><h3><i>2</i>Score Match</h3><div class="frame"><video src="assets/v2/method_match.mp4" poster="assets/v2/method_match.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
-      <div class="step"><h3><i>3</i>Score Predict</h3><div class="frame"><video src="assets/v2/method_predict.mp4" poster="assets/v2/method_predict.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
-      <div class="step"><h3><i>4</i>Deploy</h3><div class="frame"><video src="assets/v2/method_deploy.mp4" poster="assets/v2/method_deploy.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
+      <div class="step"><h3><i>1</i>Rollout &amp; Distillation</h3><p>The frozen policy runs from candidate stances; its action expert exposes a feature <i>h</i> at each one.</p>
+        <div class="frame"><video src="assets/v2/method_rollout.mp4" poster="assets/v2/method_rollout.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
+      <div class="step"><h3><i>2</i>Score Match</h3><p>A probe fitted to the sparse outcomes turns each feature <i>h</i> into a success score.</p>
+        <div class="frame"><video src="assets/v2/method_match.mp4" poster="assets/v2/method_match.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
+      <div class="step"><h3><i>3</i>Score Predict</h3><p>From the robot&rsquo;s current view at <i>a</i>, a pose-conditioned student predicts <i>z</i>&nbsp;&asymp;&nbsp;<i>h</i> for every candidate stance.</p>
+        <div class="frame"><video src="assets/v2/method_predict.mp4" poster="assets/v2/method_predict.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
+      <div class="step"><h3><i>4</i>Deploy</h3><p>In a held-out kitchen, the predicted success field guides the robot to a good stance before it hands off.</p>
+        <div class="frame"><video src="assets/v2/method_deploy.mp4" poster="assets/v2/method_deploy.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
     </div>
   </div>
 </section>
 
-<!-- 4  one example per task -->
-<section class="section alt" id="tasks">
+<!-- results -->
+<section class="section alt" id="results">
+  <div class="wrap">
+    <p class="eyebrow">Results</p>
+    <h2>Eight tasks in held-out kitchens</h2>
+    <div class="block chart-card">
+      <div class="legend" aria-hidden="true">
+        <span><i style="background:var(--pure)"></i>Pure &pi;<sub>0.5</sub></span><span><i style="background:var(--n2m)"></i>N2M</span>
+        <span><i style="background:var(--ours)"></i>Ours</span><span><i class="ref"></i>Fixed-stance reference</span>
+      </div>
+      <div class="charts" id="charts" role="img" aria-label="Success rates of pure pi0.5, N2M and ours on eight tasks"></div>
+      <p class="note">Success rate (%), mean &plusmn; s.d. over independent runs.</p>
+    </div>
+  </div>
+</section>
+
+<!-- one example per task -->
+<section class="section" id="tasks">
   <div class="wrap">
     <p class="eyebrow">Comparisons</p>
     <h2>One example per task</h2>
+    <p class="lede">Same start, same kitchen, same frozen &pi;<sub>0.5</sub>; only the stance differs.</p>
     <div class="block cmp" id="cmp">
       <div class="side">
-        <div class="frame"><video data-k="n2m" muted playsinline preload="auto"></video><span class="tag">N2M</span></div>
-        <div class="frame"><video data-k="pi05" muted playsinline preload="auto"></video><span class="tag">&pi;<sub>0.5</sub></span></div>
+        <div class="frame clip" data-k="n2m"><video muted playsinline preload="auto"></video><span class="tag">N2M</span><span class="verdict"></span></div>
+        <div class="frame clip" data-k="pi05"><video muted playsinline preload="auto"></video><span class="tag">&pi;<sub>0.5</sub></span><span class="verdict"></span></div>
       </div>
-      <div class="frame"><video data-k="ours" muted playsinline preload="auto"></video><span class="tag">Ours</span></div>
+      <div class="frame clip" data-k="ours"><video muted playsinline preload="auto"></video><span class="tag">Ours</span><span class="verdict"></span></div>
     </div>
     <div class="tabs" role="tablist" aria-label="Task" id="tabs"></div>
   </div>
 </section>
 
 <footer><div class="wrap">Anonymous project page.</div></footer>
+<div class="tip" id="tip" role="tooltip"></div>
 
 <script>
 (function () {
-  /* section 4: task tabs, the three clips of a task start together and loop together (they share one length) */
+  "use strict";
+  /* sticky bar border */
+  var bar = document.getElementById('topbar');
+  addEventListener('scroll', function () { bar.classList.toggle('scrolled', scrollY > 8); }, { passive: true });
+
+  /* ---------- results: one small chart per task (mean +- s.d., dashed fixed-stance reference) ---------- */
+  var R = [
+    ["Close fridge", [47.2, 3.8], [51.7, 3.3], [76.7, 6.0], 98], ["Close microwave", [28.3, 5.0], [38.9, 1.0], [53.3, 8.3], 72],
+    ["Close oven", [3.3, 3.0], [8.9, 3.4], [35.6, 8.9], 75], ["Close dishwasher", [21.1, 1.0], [27.2, 2.5], [50.6, 6.3], 99],
+    ["Close fridge drawer", [11.1, 2.5], [28.3, 1.7], [70.6, 1.0], 97], ["Close cabinet drawer", [23.9, 1.0], [34.4, 10.0], [58.3, 2.9], 87],
+    ["Open oven", [11.7, 4.4], [13.3, 1.7], [25.6, 1.9], 46], ["Open fridge", [7.2, 4.2], [9.4, 1.9], [18.3, 6.0], 48]
+  ];
+  var M = [["Pure π₀.₅", "var(--pure)"], ["N2M", "var(--n2m)"], ["Ours", "var(--ours)"]];
+  var NS = "http://www.w3.org/2000/svg", tip = document.getElementById('tip');
+  function el(tag, attrs, parent, txt) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (txt != null) e.textContent = txt; parent.appendChild(e); return e; }
+  var charts = document.getElementById('charts');
+  R.forEach(function (r) {
+    var Wd = 260, Ht = 250, L = 34, T = 42, PH = 160, BW = 40, y = function (v) { return T + PH * (1 - v / 100); };
+    var s = el('svg', { viewBox: '0 0 ' + Wd + ' ' + Ht }, charts);
+    el('text', { x: L + (Wd - L) / 2, y: 18, 'text-anchor': 'middle', 'class': 't' }, s, r[0]);
+    [0, 25, 50, 75, 100].forEach(function (v) {
+      el('line', { x1: L, x2: Wd - 4, y1: y(v), y2: y(v), stroke: v ? '#eef2f6' : '#94a3b8', 'stroke-width': v ? 1 : 1.2 }, s);
+      el('text', { x: L - 6, y: y(v) + 4, 'text-anchor': 'end', 'class': 'ax' }, s, v);
+    });
+    el('line', { x1: L, x2: Wd - 4, y1: y(r[4]), y2: y(r[4]), stroke: '#64748b', 'stroke-width': 1.6, 'stroke-dasharray': '6 4' }, s);
+    el('text', { x: L + 4, y: y(r[4]) + (r[4] > 90 ? 14 : -5), 'class': 'refl' }, s, r[4] + '%');
+    [1, 2, 3].forEach(function (k, i) {
+      var cx = L + 36 + i * 68, m = r[k][0], sd = r[k][1], top = y(m), base = y(0), rr = Math.min(4, (base - top) / 2);
+      var g = el('g', { 'class': 'bar' }, s);
+      el('path', { d: 'M' + (cx - BW / 2) + ',' + base + 'V' + (top + rr) + 'Q' + (cx - BW / 2) + ',' + top + ' ' + (cx - BW / 2 + rr) + ',' + top +
+        'H' + (cx + BW / 2 - rr) + 'Q' + (cx + BW / 2) + ',' + top + ' ' + (cx + BW / 2) + ',' + (top + rr) + 'V' + base + 'Z', fill: M[i][1] }, g);
+      var e1 = y(Math.min(100, m + sd)), e0 = y(Math.max(0, m - sd));
+      el('line', { x1: cx, x2: cx, y1: e1, y2: e0, stroke: '#1e293b', 'stroke-width': 1.4 }, g);
+      el('line', { x1: cx - 6, x2: cx + 6, y1: e1, y2: e1, stroke: '#1e293b', 'stroke-width': 1.4 }, g);
+      el('line', { x1: cx - 6, x2: cx + 6, y1: e0, y2: e0, stroke: '#1e293b', 'stroke-width': 1.4 }, g);
+      if (i === 2) el('text', { x: cx, y: e1 - 7, 'text-anchor': 'middle', 'class': 'val' }, g, m.toFixed(1));
+      el('text', { x: cx, y: base + 18, 'text-anchor': 'middle', 'class': 'xl' }, s, M[i][0]);
+      el('rect', { x: cx - 34, y: T - 10, width: 68, height: PH + 10, fill: 'transparent' }, g);
+      g.addEventListener('mousemove', function (ev) {
+        tip.innerHTML = r[0] + ' · ' + M[i][0] + ': <b>' + m.toFixed(1) + ' ± ' + sd.toFixed(1) + '%</b>';
+        tip.style.left = ev.clientX + 'px'; tip.style.top = ev.clientY + 'px'; tip.classList.add('on');
+      });
+      g.addEventListener('mouseleave', function () { tip.classList.remove('on'); });
+    });
+  });
+
+  /* ---------- one example per task: start together; each clip holds its last frame with its outcome; loop when all are done ---------- */
   var TASKS = [
-    ["close_oven", "Close Oven"], ["close_dishwasher", "Close Dishwasher"], ["close_fridge_drawer", "Close Fridge Drawer"], ["close_drawer", "Close Drawer"],
+    ["close_oven", "Close Oven"], ["close_dishwasher", "Close Dishwasher"], ["close_fridge_drawer", "Close Fridge Drawer"], ["close_drawer", "Close Cabinet Drawer"],
     ["open_oven", "Open Oven"], ["open_fridge", "Open Fridge"], ["close_microwave", "Close Microwave"], ["close_fridge", "Close Fridge"]
   ];
-  var vids = Array.prototype.slice.call(document.querySelectorAll('#cmp video'));
-  var master = vids.filter(function (v) { return v.dataset.k === 'ours'; })[0];
-  var tabs = document.getElementById('tabs'), token = 0;
-  function playAll() { vids.forEach(function (v) { try { v.currentTime = 0; } catch (e) {} var p = v.play(); if (p && p.catch) p.catch(function () {}); }); }
-  master.addEventListener('ended', function () { setTimeout(playAll, 250); });
+  var OK = { ours: true, n2m: false, pi05: false }, HOLD_MS = 2200;
+  var clips = Array.prototype.slice.call(document.querySelectorAll('#cmp .clip'));
+  var vids = clips.map(function (c) { return c.querySelector('video'); });
+  var tabs = document.getElementById('tabs'), token = 0, hold = null, inView = true;
+  clips.forEach(function (c) {
+    var v = c.querySelector('.verdict'), ok = OK[c.dataset.k];
+    v.className = 'verdict ' + (ok ? 'ok' : 'bad'); v.textContent = ok ? '✓ Success' : '✗ Failure';
+    if (!ok) c.classList.add('fail');
+  });
+  function start() {
+    var my = ++token; clearTimeout(hold);
+    clips.forEach(function (c) { c.classList.remove('ended'); });
+    vids.forEach(function (v) { try { v.currentTime = 0; } catch (e) {} });
+    if (!inView) return;
+    vids.forEach(function (v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); });
+    return my;
+  }
+  vids.forEach(function (v, i) {
+    v.addEventListener('ended', function () {
+      clips[i].classList.add('ended');
+      if (clips.every(function (c) { return c.classList.contains('ended'); })) { var my = token; hold = setTimeout(function () { if (my === token) start(); }, HOLD_MS); }
+    });
+  });
   function select(i) {
-    var key = TASKS[i][0], my = ++token, pending = vids.length;
+    var key = TASKS[i][0], my = ++token, pending = vids.length; clearTimeout(hold);
     Array.prototype.forEach.call(tabs.children, function (b, j) { b.setAttribute('aria-selected', j === i ? 'true' : 'false'); b.tabIndex = j === i ? 0 : -1; });
-    vids.forEach(function (v) {
-      v.pause(); v.poster = 'assets/v2/tasks/' + key + '/' + v.dataset.k + '.jpg'; v.src = 'assets/v2/tasks/' + key + '/' + v.dataset.k + '.mp4';
-      v.addEventListener('loadeddata', function () { if (--pending === 0 && my === token) playAll(); }, { once: true }); v.load();
+    clips.forEach(function (c, k) {
+      var v = vids[k]; c.classList.remove('ended'); v.pause();
+      v.poster = 'assets/v2/tasks/' + key + '/' + c.dataset.k + '.jpg'; v.src = 'assets/v2/tasks/' + key + '/' + c.dataset.k + '.mp4';
+      v.addEventListener('loadeddata', function () { if (--pending === 0 && my === token) start(); }, { once: true }); v.load();
     });
   }
   TASKS.forEach(function (t, i) {
@@ -108,6 +203,11 @@
     });
     tabs.appendChild(b);
   });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) {
+      es.forEach(function (e) { inView = e.isIntersecting; if (inView) start(); else { clearTimeout(hold); vids.forEach(function (v) { v.pause(); }); } });
+    }, { threshold: 0.25 }).observe(document.getElementById('cmp'));
+  }
   select(0);
 })();
 </script>
