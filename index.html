@@ -7,19 +7,17 @@
 <meta name="description" content="Learning where to stand so a frozen manipulation policy can succeed.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/v2.css">
 </head>
 <body>
 
-<div class="cover">
 <header class="hero">
   <div class="wrap">
     <p class="venue">Preprint</p>
     <h1>ASCENT</h1>
-    <p class="subtitle"></p>
     <p class="authors">Anonymous Authors</p>
-    <nav class="links">
+    <nav class="links" aria-label="Links">
       <span class="btn is-off" aria-disabled="true">Paper</span>
       <span class="btn is-off" aria-disabled="true">arXiv</span>
       <span class="btn is-off" aria-disabled="true">Code</span>
@@ -28,522 +26,90 @@
   </div>
 </header>
 
-<section class="section teaser-sec" id="teaser">
-  <div class="wrap wide">
-    <figure class="stage" id="stage">
-      <div class="stage-head">
-        <span class="stage-title">Perception &rarr; fields &rarr; potential</span>
-        <div class="stage-ctl">
-          <button id="replay" class="ctl" type="button" aria-label="Replay the sequence">Replay</button>
-        </div>
-      </div>
-
-      <div class="loop" id="flow">
-
-        <div class="step s1" data-stage="1">
-          <div class="step-label"><i>1</i>Observe</div>
-          <div class="instr">
-            <span class="avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.2" r="4.2"/><path d="M3.6 21.2c.9-4.6 4.3-7.2 8.4-7.2s7.5 2.6 8.4 7.2z"/></svg></span>
-            <span class="bubble">Close the fridge door.</span>
-          </div>
-          <div class="panes">
-            <div class="pane cam">
-              <video muted playsinline preload="auto" data-src="assets/panels/cam_left.mp4"></video>
-              <span class="tag">left</span>
-            </div>
-            <div class="pane cam">
-              <video muted playsinline preload="auto" data-src="assets/panels/cam_right.mp4"></video>
-              <span class="tag">right</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="arrow" data-stage="2" aria-hidden="true"><span></span></div>
-
-        <div class="step s2" data-stage="2">
-          <div class="step-label"><i>2</i>Predict</div>
-          <div class="panes">
-            <div class="pane field">
-              <video muted playsinline preload="auto" data-src="assets/panels/t.mp4"></video>
-              <span class="tag"><b>T</b> target</span>
-            </div>
-            <div class="pane field">
-              <video muted playsinline preload="auto" data-src="assets/panels/c.mp4"></video>
-              <span class="tag"><b>C</b> traversable</span>
-            </div>
-            <div class="pane field">
-              <video muted playsinline preload="auto" data-src="assets/panels/s.mp4"></video>
-              <span class="tag"><b>S</b> success</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="arrow" data-stage="3" aria-hidden="true"><span></span></div>
-
-        <div class="step s3" data-stage="3">
-          <div class="step-label"><i>3</i>Propagate<span class="then">&rarr;</span><i>4</i>Move &amp; decide</div>
-          <div class="panes">
-            <div class="pane scene">
-              <video muted playsinline preload="auto" data-src="assets/panels/scene.mp4"></video>
-              <span class="tag">top-down</span>
-              <span class="inset-dim" aria-hidden="true"></span>
-              <span class="tag inset-tag"><b>P</b><sub>geo</sub></span>
-            </div>
-          </div>
-          <div class="gate" id="gate">
-            <span class="gate-name">handoff gate</span>
-            <span class="gate-bar"><span class="gate-fill"></span><span class="gate-thr"><em>0.5</em></span></span>
-            <span class="gate-val">0.00</span>
-          </div>
-        </div>
-
-        <svg class="loopback" aria-hidden="true"><path d=""/></svg>
-        <span class="loop-label" aria-hidden="true">move 0.15 m, re-observe</span>
-      </div>
-
-      <span class="rate stage-rate">3&times;</span>
-    </figure>
-  </div>
-</section>
-
-<nav class="cover-nav" aria-label="Sections">
-  <div class="wrap wide">
-    <a href="#intro">Motivation</a>
-    <a href="#method">Architecture</a>
-    <a href="#results">Results</a>
-  </div>
-</nav>
-</div>
-
-<section class="section" id="intro">
+<!-- 1  obstacle episode: input -> goal -> top-down -->
+<section class="section" id="overview" style="padding-top:20px">
   <div class="wrap">
-    <h2 class="headline">Every policy has its own sweet spot</h2>
-    <figure class="fig-card">
-      <img src="assets/img/stance-heatmaps.jpg" width="2200" height="1110" loading="lazy"
-           alt="Success rate of four frozen manipulation policies from 100 standing poses around the same fridge; each policy succeeds only inside its own small region.">
-    </figure>
-    <div class="prose">
-      <p>
-        Getting a mobile robot <em>next to</em> the fridge is not the same as getting it <em>ready</em> to close
-        it. We placed the robot at <strong>100 standing poses</strong> around one fridge and let
-        <strong>four frozen manipulation policies</strong> try to close it from each pose. Every policy succeeds
-        only inside its own small region, and that region has a different shape and place for each policy.
-        Away from it, success drops to almost nothing: averaged over all 100 poses, even the strongest policy,
-        &pi;<sub>0.5</sub>, closes the door only <strong class="num">26.2%</strong> of the time.
-      </p>
-      <p>
-        <strong class="hl">ASCENT</strong> learns where a frozen policy will succeed and moves the base there
-        before handing over. A stereo-language model predicts the <strong>target</strong>, the policy&rsquo;s
-        <strong>immediate success</strong> and <strong>traversability</strong> in a bird&rsquo;s-eye view around
-        the robot. <strong>Geodesic propagation</strong> turns these into short base motions toward a favorable
-        stance, and a <strong>learned gate</strong> decides when to hand control to the unchanged policy, with no
-        reinforcement-learning updates. Across five articulated-object closing tasks and six fully visible,
-        obstacle-free starting distances, ASCENT reaches <strong class="num hl">58.4%</strong> task-macro
-        success, against <strong class="num">37.9%</strong> for N2M and <strong class="num">19.8%</strong> for
-        running the frozen policy directly. Further CloseFridge tests cover partial visibility and randomized
-        obstacles, and matched evaluations show gains with four different frozen policies.
-      </p>
+    <div class="frame teaser">
+      <video src="assets/v2/overview.mp4" poster="assets/v2/overview.jpg" autoplay muted loop playsinline preload="auto"></video>
     </div>
   </div>
 </section>
 
-<section class="section alt" id="method">
+<!-- 2  generalization -->
+<section class="section alt" id="generalization">
   <div class="wrap">
-    <h2 class="headline">How ASCENT finds a good stance</h2>
-    <div class="prose">
-      <p>
-        From two onboard RGB views and the instruction, a stereo-language model predicts three bird&rsquo;s-eye-view
-        fields around the robot: where the <strong>target</strong> is (<strong>T</strong>), where the frozen
-        manipulation policy would <strong>succeed</strong> if it took over from that stance (<strong>S</strong>),
-        and where the base can <strong>drive</strong> (<strong>C</strong>). Geodesic planning spreads the predicted
-        success over the traversable map, discounting each stance by its path cost, into a potential
-        <strong>P<sub>geo</sub></strong>. The base takes a short step up this potential and looks again; a
-        <strong>learned gate</strong> decides when the current stance is good enough to hand off to the unchanged
-        policy.
-      </p>
+    <p class="eyebrow">Generalization</p>
+    <h2>Trained in one kitchen, deployed in unseen ones</h2>
+    <div class="block pair">
+      <div class="frame"><video src="assets/v2/gen_train.mp4" poster="assets/v2/gen_train.jpg" autoplay muted loop playsinline preload="auto"></video><span class="tag top-right">Training scene</span></div>
+      <div class="frame"><video src="assets/v2/gen_heldout.mp4" poster="assets/v2/gen_heldout.jpg" autoplay muted loop playsinline preload="auto"></video><span class="tag top-right">Held-out scene</span></div>
     </div>
-    <figure class="method-fig">
-      <img src="assets/img/method.png" width="1612" height="760" loading="lazy"
-           alt="ASCENT overview: stereo RGB and the instruction go into a learned model that predicts target, success and traversability fields; geodesic planning turns them into a potential that guides the base.">
-    </figure>
   </div>
 </section>
 
-<section class="section" id="results">
+<!-- 3  how it is trained -->
+<section class="section" id="method">
   <div class="wrap">
-    <h2 class="headline">Results on five different tasks</h2>
-    <div class="prose">
-      <p>
-        Five articulated-object closing tasks. In every example, ASCENT, N2M and &pi;<sub>0.5</sub> only start from
-        the <strong>same pose</strong> in the same randomized kitchen, and all three use the <strong>same frozen
-        &pi;<sub>0.5</sub> checkpoint</strong> for manipulation &mdash; they differ only in where the base is when
-        it starts.
-      </p>
-    </div>
-
-  <article class="task" id="closefridge" data-task="CloseFridge">
-    <div class="task-head">
-      <div class="task-title">
-        <span class="task-idx">01</span>
-        <h3>Close Fridge</h3>
-      </div>
-      <div class="ex-switch" role="tablist" aria-label="Close Fridge examples">
-        <button type="button" role="tab" class="on" aria-selected="true"
-          data-dist="0.7"
-          data-ascent="assets/examples/CloseFridge/ex1/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseFridge/ex1/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseFridge/ex1/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseFridge/ex1/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseFridge/ex1/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseFridge/ex1/purepi05.jpg"
-          data-purepi05-ok="0">Example 1</button>
-        <button type="button" role="tab" aria-selected="false"
-          data-dist="2.0"
-          data-ascent="assets/examples/CloseFridge/ex2/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseFridge/ex2/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseFridge/ex2/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseFridge/ex2/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseFridge/ex2/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseFridge/ex2/purepi05.jpg"
-          data-purepi05-ok="0">Example 2</button>
-        <button type="button" role="tab" aria-selected="false"
-          data-dist="2.5"
-          data-ascent="assets/examples/CloseFridge/ex3/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseFridge/ex3/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseFridge/ex3/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseFridge/ex3/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseFridge/ex3/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseFridge/ex3/purepi05.jpg"
-          data-purepi05-ok="0">Example 3</button>
-      </div>
-    </div>
-    <div class="trio">
-      <figure class="clip is-ours" data-sys="ascent">
-        <figcaption class="clip-head"><span class="sys">ASCENT</span><span class="ours">ours</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseFridge/ex1/ascent.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict ok">Success</span>
-        </div>
-      </figure>
-      <figure class="clip" data-sys="n2m">
-        <figcaption class="clip-head"><span class="sys">N2M</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseFridge/ex1/n2m.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict bad">Fail</span>
-        </div>
-      </figure>
-      <figure class="clip" data-sys="purepi05">
-        <figcaption class="clip-head"><span class="sys">&pi;<sub>0.5</sub> only</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseFridge/ex1/purepi05.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict bad">Fail</span>
-        </div>
-      </figure>
-    </div>
-  </article>
-
-  <article class="task" id="closeoven" data-task="CloseOven">
-    <div class="task-head">
-      <div class="task-title">
-        <span class="task-idx">02</span>
-        <h3>Close Oven</h3>
-      </div>
-      <div class="ex-switch" role="tablist" aria-label="Close Oven examples">
-        <button type="button" role="tab" class="on" aria-selected="true"
-          data-dist="1.0"
-          data-ascent="assets/examples/CloseOven/ex1/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseOven/ex1/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseOven/ex1/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseOven/ex1/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseOven/ex1/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseOven/ex1/purepi05.jpg"
-          data-purepi05-ok="0">Example 1</button>
-        <button type="button" role="tab" aria-selected="false"
-          data-dist="1.0"
-          data-ascent="assets/examples/CloseOven/ex2/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseOven/ex2/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseOven/ex2/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseOven/ex2/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseOven/ex2/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseOven/ex2/purepi05.jpg"
-          data-purepi05-ok="0">Example 2</button>
-        <button type="button" role="tab" aria-selected="false"
-          data-dist="0.5"
-          data-ascent="assets/examples/CloseOven/ex3/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseOven/ex3/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseOven/ex3/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseOven/ex3/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseOven/ex3/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseOven/ex3/purepi05.jpg"
-          data-purepi05-ok="0">Example 3</button>
-      </div>
-    </div>
-    <div class="trio">
-      <figure class="clip is-ours" data-sys="ascent">
-        <figcaption class="clip-head"><span class="sys">ASCENT</span><span class="ours">ours</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseOven/ex1/ascent.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict ok">Success</span>
-        </div>
-      </figure>
-      <figure class="clip" data-sys="n2m">
-        <figcaption class="clip-head"><span class="sys">N2M</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseOven/ex1/n2m.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict bad">Fail</span>
-        </div>
-      </figure>
-      <figure class="clip" data-sys="purepi05">
-        <figcaption class="clip-head"><span class="sys">&pi;<sub>0.5</sub> only</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseOven/ex1/purepi05.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict bad">Fail</span>
-        </div>
-      </figure>
-    </div>
-  </article>
-
-  <article class="task" id="closefridgedrawer" data-task="CloseFridgeDrawer">
-    <div class="task-head">
-      <div class="task-title">
-        <span class="task-idx">03</span>
-        <h3>Close Fridge Drawer</h3>
-      </div>
-      <div class="ex-switch" role="tablist" aria-label="Close Fridge Drawer examples">
-        <button type="button" role="tab" class="on" aria-selected="true"
-          data-dist="2.0"
-          data-ascent="assets/examples/CloseFridgeDrawer/ex1/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseFridgeDrawer/ex1/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseFridgeDrawer/ex1/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseFridgeDrawer/ex1/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseFridgeDrawer/ex1/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseFridgeDrawer/ex1/purepi05.jpg"
-          data-purepi05-ok="0">Example 1</button>
-        <button type="button" role="tab" aria-selected="false"
-          data-dist="1.0"
-          data-ascent="assets/examples/CloseFridgeDrawer/ex2/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseFridgeDrawer/ex2/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseFridgeDrawer/ex2/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseFridgeDrawer/ex2/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseFridgeDrawer/ex2/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseFridgeDrawer/ex2/purepi05.jpg"
-          data-purepi05-ok="0">Example 2</button>
-        <button type="button" role="tab" aria-selected="false"
-          data-dist="1.0"
-          data-ascent="assets/examples/CloseFridgeDrawer/ex3/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseFridgeDrawer/ex3/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseFridgeDrawer/ex3/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseFridgeDrawer/ex3/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseFridgeDrawer/ex3/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseFridgeDrawer/ex3/purepi05.jpg"
-          data-purepi05-ok="0">Example 3</button>
-      </div>
-    </div>
-    <div class="trio">
-      <figure class="clip is-ours" data-sys="ascent">
-        <figcaption class="clip-head"><span class="sys">ASCENT</span><span class="ours">ours</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseFridgeDrawer/ex1/ascent.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict ok">Success</span>
-        </div>
-      </figure>
-      <figure class="clip" data-sys="n2m">
-        <figcaption class="clip-head"><span class="sys">N2M</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseFridgeDrawer/ex1/n2m.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict bad">Fail</span>
-        </div>
-      </figure>
-      <figure class="clip" data-sys="purepi05">
-        <figcaption class="clip-head"><span class="sys">&pi;<sub>0.5</sub> only</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseFridgeDrawer/ex1/purepi05.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict bad">Fail</span>
-        </div>
-      </figure>
-    </div>
-  </article>
-
-  <article class="task" id="closedishwasher" data-task="CloseDishwasher">
-    <div class="task-head">
-      <div class="task-title">
-        <span class="task-idx">04</span>
-        <h3>Close Dishwasher</h3>
-      </div>
-      <div class="ex-switch" role="tablist" aria-label="Close Dishwasher examples">
-        <button type="button" role="tab" class="on" aria-selected="true"
-          data-dist="1.0"
-          data-ascent="assets/examples/CloseDishwasher/ex1/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseDishwasher/ex1/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseDishwasher/ex1/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseDishwasher/ex1/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseDishwasher/ex1/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseDishwasher/ex1/purepi05.jpg"
-          data-purepi05-ok="0">Example 1</button>
-        <button type="button" role="tab" aria-selected="false"
-          data-dist="1.0"
-          data-ascent="assets/examples/CloseDishwasher/ex2/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseDishwasher/ex2/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseDishwasher/ex2/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseDishwasher/ex2/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseDishwasher/ex2/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseDishwasher/ex2/purepi05.jpg"
-          data-purepi05-ok="0">Example 2</button>
-        <button type="button" role="tab" aria-selected="false"
-          data-dist="2.0"
-          data-ascent="assets/examples/CloseDishwasher/ex3/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseDishwasher/ex3/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseDishwasher/ex3/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseDishwasher/ex3/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseDishwasher/ex3/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseDishwasher/ex3/purepi05.jpg"
-          data-purepi05-ok="0">Example 3</button>
-      </div>
-    </div>
-    <div class="trio">
-      <figure class="clip is-ours" data-sys="ascent">
-        <figcaption class="clip-head"><span class="sys">ASCENT</span><span class="ours">ours</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseDishwasher/ex1/ascent.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict ok">Success</span>
-        </div>
-      </figure>
-      <figure class="clip" data-sys="n2m">
-        <figcaption class="clip-head"><span class="sys">N2M</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseDishwasher/ex1/n2m.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict bad">Fail</span>
-        </div>
-      </figure>
-      <figure class="clip" data-sys="purepi05">
-        <figcaption class="clip-head"><span class="sys">&pi;<sub>0.5</sub> only</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseDishwasher/ex1/purepi05.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict bad">Fail</span>
-        </div>
-      </figure>
-    </div>
-  </article>
-
-  <article class="task" id="closemicrowave" data-task="CloseMicrowave">
-    <div class="task-head">
-      <div class="task-title">
-        <span class="task-idx">05</span>
-        <h3>Close Microwave</h3>
-      </div>
-      <div class="ex-switch" role="tablist" aria-label="Close Microwave examples">
-        <button type="button" role="tab" class="on" aria-selected="true"
-          data-dist="0.5"
-          data-ascent="assets/examples/CloseMicrowave/ex1/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseMicrowave/ex1/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseMicrowave/ex1/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseMicrowave/ex1/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseMicrowave/ex1/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseMicrowave/ex1/purepi05.jpg"
-          data-purepi05-ok="0">Example 1</button>
-        <button type="button" role="tab" aria-selected="false"
-          data-dist="2.0"
-          data-ascent="assets/examples/CloseMicrowave/ex2/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseMicrowave/ex2/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseMicrowave/ex2/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseMicrowave/ex2/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseMicrowave/ex2/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseMicrowave/ex2/purepi05.jpg"
-          data-purepi05-ok="0">Example 2</button>
-        <button type="button" role="tab" aria-selected="false"
-          data-dist="1.5"
-          data-ascent="assets/examples/CloseMicrowave/ex3/ascent.mp4"
-          data-ascent-poster="assets/examples/CloseMicrowave/ex3/ascent.jpg"
-          data-ascent-ok="1"
-          data-n2m="assets/examples/CloseMicrowave/ex3/n2m.mp4"
-          data-n2m-poster="assets/examples/CloseMicrowave/ex3/n2m.jpg"
-          data-n2m-ok="0"
-          data-purepi05="assets/examples/CloseMicrowave/ex3/purepi05.mp4"
-          data-purepi05-poster="assets/examples/CloseMicrowave/ex3/purepi05.jpg"
-          data-purepi05-ok="0">Example 3</button>
-      </div>
-    </div>
-    <div class="trio">
-      <figure class="clip is-ours" data-sys="ascent">
-        <figcaption class="clip-head"><span class="sys">ASCENT</span><span class="ours">ours</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseMicrowave/ex1/ascent.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict ok">Success</span>
-        </div>
-      </figure>
-      <figure class="clip" data-sys="n2m">
-        <figcaption class="clip-head"><span class="sys">N2M</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseMicrowave/ex1/n2m.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict bad">Fail</span>
-        </div>
-      </figure>
-      <figure class="clip" data-sys="purepi05">
-        <figcaption class="clip-head"><span class="sys">&pi;<sub>0.5</sub> only</span></figcaption>
-        <div class="vbox">
-          <video muted playsinline preload="none" poster="assets/examples/CloseMicrowave/ex1/purepi05.jpg"></video>
-          <span class="rate">3&times;</span>
-          <span class="verdict bad">Fail</span>
-        </div>
-      </figure>
-    </div>
-  </article>
-
-    <div class="takeaway">
-      <span class="takeaway-k">Why the baselines fail</span>
-      <p>
-        Run straight from where the robot stands, &pi;<sub>0.5</sub> often misjudges distance: it starts reaching
-        before it is close enough and comes up short. From an unfamiliar viewpoint it can also fail to pick out the
-        appliance and drive off somewhere else. The same weaknesses sink N2M whenever its predicted stance is not
-        a good one.
-      </p>
+    <p class="eyebrow">Method</p>
+    <h2>How it is trained</h2>
+    <div class="block steps">
+      <div class="step"><h3><i>1</i>Rollout &amp; Distillation</h3><div class="frame"><video src="assets/v2/method_rollout.mp4" poster="assets/v2/method_rollout.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
+      <div class="step"><h3><i>2</i>Score Match</h3><div class="frame"><video src="assets/v2/method_match.mp4" poster="assets/v2/method_match.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
+      <div class="step"><h3><i>3</i>Score Predict</h3><div class="frame"><video src="assets/v2/method_predict.mp4" poster="assets/v2/method_predict.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
+      <div class="step"><h3><i>4</i>Deploy</h3><div class="frame"><video src="assets/v2/method_deploy.mp4" poster="assets/v2/method_deploy.jpg" autoplay muted loop playsinline preload="auto"></video></div></div>
     </div>
   </div>
 </section>
 
-<script src="assets/js/teaser.js"></script>
-<script src="assets/js/results.js"></script>
+<!-- 4  one example per task -->
+<section class="section alt" id="tasks">
+  <div class="wrap">
+    <p class="eyebrow">Comparisons</p>
+    <h2>One example per task</h2>
+    <div class="block cmp" id="cmp">
+      <div class="side">
+        <div class="frame"><video data-k="n2m" muted playsinline preload="auto"></video><span class="tag">N2M</span></div>
+        <div class="frame"><video data-k="pi05" muted playsinline preload="auto"></video><span class="tag">&pi;<sub>0.5</sub></span></div>
+      </div>
+      <div class="frame"><video data-k="ours" muted playsinline preload="auto"></video><span class="tag">Ours</span></div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Task" id="tabs"></div>
+  </div>
+</section>
+
+<footer><div class="wrap">Anonymous project page.</div></footer>
+
+<script>
+(function () {
+  /* section 4: task tabs, the three clips of a task start together and loop together (they share one length) */
+  var TASKS = [
+    ["close_oven", "Close Oven"], ["close_dishwasher", "Close Dishwasher"], ["close_fridge_drawer", "Close Fridge Drawer"], ["close_drawer", "Close Drawer"],
+    ["open_oven", "Open Oven"], ["open_fridge", "Open Fridge"], ["close_microwave", "Close Microwave"], ["close_fridge", "Close Fridge"]
+  ];
+  var vids = Array.prototype.slice.call(document.querySelectorAll('#cmp video'));
+  var master = vids.filter(function (v) { return v.dataset.k === 'ours'; })[0];
+  var tabs = document.getElementById('tabs'), token = 0;
+  function playAll() { vids.forEach(function (v) { try { v.currentTime = 0; } catch (e) {} var p = v.play(); if (p && p.catch) p.catch(function () {}); }); }
+  master.addEventListener('ended', function () { setTimeout(playAll, 250); });
+  function select(i) {
+    var key = TASKS[i][0], my = ++token, pending = vids.length;
+    Array.prototype.forEach.call(tabs.children, function (b, j) { b.setAttribute('aria-selected', j === i ? 'true' : 'false'); b.tabIndex = j === i ? 0 : -1; });
+    vids.forEach(function (v) {
+      v.pause(); v.poster = 'assets/v2/tasks/' + key + '/' + v.dataset.k + '.jpg'; v.src = 'assets/v2/tasks/' + key + '/' + v.dataset.k + '.mp4';
+      v.addEventListener('loadeddata', function () { if (--pending === 0 && my === token) playAll(); }, { once: true }); v.load();
+    });
+  }
+  TASKS.forEach(function (t, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.textContent = t[1];
+    b.addEventListener('click', function () { select(i); });
+    b.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return;
+      var j = (i + d + TASKS.length) % TASKS.length; select(j); tabs.children[j].focus();
+    });
+    tabs.appendChild(b);
+  });
+  select(0);
+})();
+</script>
 </body>
 </html>
