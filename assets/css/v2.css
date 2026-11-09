@@ -158,3 +158,6 @@ footer { padding: 36px 0 48px; text-align: center; color: var(--muted); font-siz
 /* v5: wider overview video (breaks out of the text column), more air between the four method videos */
 .teaser { width: min(1320px, calc(100vw - 32px)); position: relative; left: 50%; transform: translateX(-50%); }
 @media (min-width: 761px) { .steps { gap: 56px 72px; } }
+
+/* v6: the four method videos a little smaller (narrower grid, wider gutter between the two columns) */
+@media (min-width: 761px) { .steps { max-width: 1000px; margin-left: auto; margin-right: auto; gap: 56px 96px; } }
