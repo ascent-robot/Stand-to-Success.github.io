@@ -154,3 +154,7 @@ footer { padding: 36px 0 48px; text-align: center; color: var(--muted); font-siz
 .charts svg.go { cursor: pointer; border-radius: 10px; transition: background .15s; }
 .charts svg.go:hover, .charts svg.go:focus-visible { background: #f8fafc; outline: none; }
 @media (min-width: 761px) { .step p { min-height: 4.65em; } }
+
+/* v5: wider overview video (breaks out of the text column), more air between the four method videos */
+.teaser { width: min(1320px, calc(100vw - 32px)); position: relative; left: 50%; transform: translateX(-50%); }
+@media (min-width: 761px) { .steps { gap: 56px 72px; } }
