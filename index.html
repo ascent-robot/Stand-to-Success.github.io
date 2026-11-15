@@ -40,8 +40,7 @@
     </div>
     <div class="stats">
       <div class="stat"><b>8</b><span>articulated-object tasks</span></div>
-      <div class="stat"><b class="g">48.6%</b><span>average success in held-out kitchens, vs. 26.5% for N2M</span></div>
-      <div class="stat"><b>0</b><span>manipulation weights changed</span></div>
+      <div class="stat"><b class="g">47.0%</b><span>average success in held-out kitchens, vs. 26.5% for N2M</span></div>
     </div>
     <p class="caption">From two robot cameras and a language instruction, the robot finds the target, walks around the obstacle, and stops where the frozen policy is most likely to succeed&mdash;then hands off.</p>
   </div>
@@ -52,7 +51,7 @@
   <div class="wrap narrow">
     <p class="eyebrow">Abstract</p>
     <h2>Reach is not enough</h2>
-    <p class="abstract">A mobile robot can reach a task object yet remain poorly positioned for its manipulation policy. Choosing a useful base stance requires understanding the policy&rsquo;s visual and action preferences, beyond geometric reachability alone. We introduce <strong>Stand to Succeed</strong>, a policy-aware stance predictor that reuses a pretrained vision&ndash;language&ndash;action model without adapting its manipulation weights. During training, the policy&rsquo;s action expert exposes representations at candidate stances. A probe fitted to sparse manipulation outcomes links these representations to success, and a pose-conditioned student predicts them from the robot&rsquo;s current stereo observation. Feature matching and score preservation transfer candidate-view knowledge to unexecuted stance queries, while a supervised readout complements the fixed probe. At deployment, the predicted success field guides geodesic repositioning through traversable space, and a compact monotone gate decides when to hand off. Experiments on eight articulated-object tasks in held-out kitchens show improved task completion, with representation comparisons and budget studies explaining the contribution of policy-derived supervision.</p>
+    <p class="abstract">A mobile robot can reach a task object yet remain poorly positioned for its manipulation policy. Choosing a useful base stance requires understanding the policy&rsquo;s visual and action preferences, beyond geometric reachability alone. We introduce <strong>Stand to Succeed</strong>, a policy-aware stance predictor that reuses a pretrained vision&ndash;language&ndash;action model without adapting its manipulation weights. During training, the policy&rsquo;s action expert exposes representations at candidate stances. A probe fitted to sparse manipulation outcomes links these representations to success, and a pose-conditioned student predicts them from the robot&rsquo;s current stereo observation. Feature matching and score preservation transfer candidate-view knowledge to unexecuted stance queries, while a supervised readout complements the fixed probe. At deployment, a lightweight controller distilled from value iteration over a dense policy-derived success field moves the base toward a suitable stance, and hands off once stopping is valued at least as highly as continuing. Experiments on eight articulated-object tasks in held-out kitchens show improved task completion, with representation comparisons and budget studies explaining the contribution of policy-derived supervision.</p>
   </div>
 </section>
 
@@ -101,12 +100,12 @@
     <div class="block summary">
       <div class="avg-card">
         <p class="card-t">Average over eight tasks</p>
-        <div id="avg" role="img" aria-label="Average success: pure pi0.5 19.2%, N2M 26.5%, ours 48.6%"></div>
+        <div id="avg" role="img" aria-label="Average success: pure pi0.5 19.2%, N2M 26.5%, ours 47.0%"></div>
       </div>
       <div class="kpis">
         <div class="kpi"><b>8 / 8</b><span>tasks where ours beats both baselines</span></div>
-        <div class="kpi"><b>+22.1</b><span>points over N2M, averaged over tasks</span></div>
-        <div class="kpi"><b>2.5&times;</b><span>the average success rate of &pi;<sub>0.5</sub> alone</span></div>
+        <div class="kpi"><b>+20.5</b><span>points over N2M, averaged over tasks</span></div>
+        <div class="kpi"><b>2.4&times;</b><span>the average success rate of &pi;<sub>0.5</sub> alone</span></div>
       </div>
     </div>
     <div class="block chart-card">
@@ -132,10 +131,10 @@
 
   /* ---------- results: one small chart per task (mean +- s.d., dashed fixed-stance reference) ---------- */
   var R = [
-    ["Close fridge", [47.2, 3.8], [51.7, 3.3], [76.7, 6.0], 98], ["Close microwave", [28.3, 5.0], [38.9, 1.0], [53.3, 8.3], 72],
-    ["Close oven", [3.3, 3.0], [8.9, 3.4], [35.6, 8.9], 75], ["Close dishwasher", [21.1, 1.0], [27.2, 2.5], [50.6, 6.3], 99],
-    ["Close fridge drawer", [11.1, 2.5], [28.3, 1.7], [70.6, 1.0], 97], ["Close cabinet drawer", [23.9, 1.0], [34.4, 10.0], [58.3, 2.9], 87],
-    ["Open oven", [11.7, 4.4], [13.3, 1.7], [25.6, 1.9], 46], ["Open fridge", [7.2, 4.2], [9.4, 1.9], [18.3, 6.0], 48]
+    ["Close fridge", [47.2, 3.8], [51.7, 3.3], [82.2, 5.4], 98], ["Close microwave", [28.3, 5.0], [38.9, 1.0], [57.8, 4.2], 72],
+    ["Close oven", [3.3, 3.0], [8.9, 3.4], [32.8, 14.5], 75], ["Close dishwasher", [21.1, 1.0], [27.2, 2.5], [48.3, 1.7], 99],
+    ["Close fridge drawer", [11.1, 2.5], [28.3, 1.7], [50.0, 3.3], 97], ["Close cabinet drawer", [23.9, 1.0], [34.4, 10.0], [55.6, 5.9], 87],
+    ["Open oven", [11.7, 4.4], [13.3, 1.7], [33.3, 0.0], 46], ["Open fridge", [7.2, 4.2], [9.4, 1.9], [16.1, 4.2], 48]
   ];
   var M = [["Pure π₀.₅", "var(--pure)"], ["N2M", "var(--n2m)"], ["Ours", "var(--ours)"]];
   var NS = "http://www.w3.org/2000/svg", tip = document.getElementById('tip');
