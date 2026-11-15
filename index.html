@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stand to Succeed</title>
-<meta name="description" content="A policy-aware stance predictor that reuses a frozen vision-language-action policy.">
+<title>M4M: Learning to Move from and for Manipulation Policies</title>
+<meta name="description" content="Learning to Move from and for Manipulation Policies: Spatializing Latent Action Representations for Goal-Pose-Free Mobile Manipulation.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -13,15 +13,15 @@
 <body>
 
 <div class="topbar" id="topbar"><div class="wrap">
-  <a class="brand" href="#top">Stand to Succeed</a>
+  <a class="brand" href="#top">M4M</a>
   <nav aria-label="Sections"><a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#tasks">Examples</a><a href="#results">Results</a></nav>
 </div></div>
 
 <header class="hero" id="top">
   <div class="wrap">
     <p class="venue">Preprint</p>
-    <h1>Stand to Succeed</h1>
-    <p class="tagline">Policy-aware stance prediction that reuses a frozen vision&ndash;language&ndash;action policy.</p>
+    <h1>Learning to Move from and for Manipulation Policies</h1>
+    <p class="tagline">Spatializing Latent Action Representations for Goal-Pose-Free Mobile Manipulation</p>
     <p class="authors">Anonymous Authors</p>
     <nav class="links" aria-label="Links">
       <span class="btn is-off" aria-disabled="true">Paper</span>
@@ -51,7 +51,7 @@
   <div class="wrap narrow">
     <p class="eyebrow">Abstract</p>
     <h2>Reach is not enough</h2>
-    <p class="abstract">A mobile robot can reach a task object yet remain poorly positioned for its manipulation policy. Choosing a useful base stance requires understanding the policy&rsquo;s visual and action preferences, beyond geometric reachability alone. We introduce <strong>Stand to Succeed</strong>, a policy-aware stance predictor that reuses a pretrained vision&ndash;language&ndash;action model without adapting its manipulation weights. During training, the policy&rsquo;s action expert exposes representations at candidate stances. A probe fitted to sparse manipulation outcomes links these representations to success, and a pose-conditioned student predicts them from the robot&rsquo;s current stereo observation. Feature matching and score preservation transfer candidate-view knowledge to unexecuted stance queries, while a supervised readout complements the fixed probe. At deployment, a lightweight controller distilled from value iteration over a dense policy-derived success field moves the base toward a suitable stance, and hands off once stopping is valued at least as highly as continuing. Experiments on eight articulated-object tasks in held-out kitchens show improved task completion, with representation comparisons and budget studies explaining the contribution of policy-derived supervision.</p>
+    <p class="abstract">The success of manipulation policies is closely tied to the spatial relationship between the robot and the target object, as well as the task being performed, making the ability to adjust the robot&rsquo;s pose critical for successful execution. When the robot starts away from the task, such adjustments require coordinating navigation with local manipulation. Jointly training these capabilities incurs substantial computational and data costs, while navigating toward a predefined goal pose limits the flexibility needed to adapt to task-specific manipulation requirements. To address these challenges, we propose Learning to Move from and for Manipulation Policies (<b>M4M</b>), a framework that learns manipulation-aware mobility directly from pretrained manipulation policies. By leveraging the hidden representations of the policy&rsquo;s action-generating network as dense supervision, together with a limited number of manipulation execution outcomes, we learn a spatially conditioned embedding that captures task-dependent manipulation success across candidate robot poses. From the robot&rsquo;s current stereo observations, this representation estimates manipulation success at unvisited poses without rolling out the manipulation policy at each location. It is further integrated into navigation policy training, while a learned handoff policy decides when to transition from navigation to manipulation, enabling the robot to move and manipulate in a unified, task-aware manner. Across eight articulated-object tasks in unseen RoboCasa kitchens, M4M achieves 47.0% mean task success, compared with 26.5% for the strongest baseline and 19.2% for direct manipulation execution, and refrigerator-closing experiments show consistent improvements across four frozen manipulation policies.</p>
   </div>
 </section>
 
@@ -96,7 +96,7 @@
   <div class="wrap">
     <p class="eyebrow">Results</p>
     <h2>Eight tasks in held-out kitchens</h2>
-    <p class="lede">On every one of the eight tasks, choosing where to stand with Stand to Succeed gives the same frozen &pi;<sub>0.5</sub> a higher success rate than running it alone or after N2M.</p>
+    <p class="lede">On every one of the eight tasks, choosing where to stand with M4M gives the same frozen &pi;<sub>0.5</sub> a higher success rate than running it alone or after N2M.</p>
     <div class="block summary">
       <div class="avg-card">
         <p class="card-t">Average over eight tasks</p>
